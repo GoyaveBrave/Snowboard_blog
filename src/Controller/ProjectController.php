@@ -36,7 +36,14 @@ class ProjectController extends AbstractController
      */
     public function home() 
     {
-        return $this->render('project/home.html.twig');
+        $repo = $this->getDoctrine()->getRepository(Tricks::class);
+        
+        $tricks = $repo->findAll();
+
+        return $this->render('project/home.html.twig', [
+            'controller_name' => 'ProjectController',
+            'tricks' => $tricks
+        ]);
     } 
     /**
      * @Route("/project/newTricks", name="new_tricks")

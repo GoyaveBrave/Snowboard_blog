@@ -5,27 +5,30 @@ security:
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory: { memory: null }
-        in_database:
+        app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
     firewalls:
+    # Authentification (login process) and Authorization (after login process, determines your access)
+    # Dev section, only for dev's toolbar
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+    #The really firewall
         main:
             anonymous: true
-
-            provider: in_database
-
-            form_login:
-                login_path: security_login
-                check_path: security_login
+            
+            guard:
+                authenticators:
+                    - App\Security\LoginFormAuthenticator
 
             logout:
-                path: security_logout
-                target: all_tricks
+                path: app_logout
+
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 2592000
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
 
