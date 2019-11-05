@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,17 +21,32 @@ class Tricks
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $Tricks_name;
+    private $name;
 
     /**
      * @ORM\Column(type="text")
      */
-    private $Tricks_Description;
+    private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $Tricks_illustration;
+    private $illustrationFilename;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="tricks")
+     */
+    private $category;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="trick", orphanRemoval=true)
+     */
+    private $comments;
+
+    public function __construct()
+    {
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -37,38 +54,81 @@ class Tricks
     }
 
 
-    public function getTricksName(): ?string
+    public function getName(): ?string
     {
-        return $this->Tricks_name;
+        return $this->name;
     }
 
-    public function setTricksName(string $Tricks_name): self
+    public function setName(string $name): self
     {
-        $this->Tricks_name = $Tricks_name;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getTricksDescription(): ?string
+    public function getdescription(): ?string
     {
-        return $this->Tricks_Description;
+        return $this->description;
     }
 
-    public function setTricksDescription(string $Tricks_Description): self
+    public function setdescription(string $description): self
     {
-        $this->Tricks_Description = $Tricks_Description;
+        $this->description = $description;
 
         return $this;
     }
 
-    public function getTricksIllustration(): ?string
+    public function getillustrationFilename(): ?string
     {
-        return $this->Tricks_illustration;
+        return $this->illustrationFilename;
     }
 
-    public function setTricksIllustration(string $Tricks_illustration): self
+    public function setillustrationFilename(string $illustrationFilename): self
     {
-        $this->Tricks_illustration = $Tricks_illustration;
+        $this->illustrationFilename = $illustrationFilename;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setTrick($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getTrick() === $this) {
+                $comment->setTrick(null);
+            }
+        }
 
         return $this;
     }

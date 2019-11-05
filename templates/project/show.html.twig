@@ -1,12 +1,40 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <article>
-        <h2>{{ article.title }}</h2>
-        <div class="metadata">Ecrit le {{ article.createdAt | date ('d/m/Y') }} à {{ article.createdAt | date ('H:i') }}</div>
+    <trick>
+        <h2>{{ trick.name }}</h2>
+        <div class="metadata">Catégorie
+            {{ trick.category.title }}</div>
         <div class="content">
-            <img src="{{ article.image }}" alt="">
-            <p>{{ article.content }}</p>
+            <img src="{{ asset('uploads/img/' ~ trick.illustrationFilename) }}" alt="">
+            <p>{{ trick.description }}</p>
+        </div>
+    </trick>
+
+    <section id="commentaires">
+    <h1>{{ trick.comments | length }} Commentaires :</h1>
+    {% for comment in trick.comments %}
+        <div class="comment">
+            <div class="row">
+            <div class="col-3">
+               {{comment.author}} (<small>{{comment.createdAt | date('d/m/y à H:i')}}</small>)
             </div>
-    </article>
+            <div class="col">
+              {{comment.content | raw}}
+            </div>
+            </div>
+    {% endfor %}
+    {% if app.user %}
+    {{ form_start(commentForm) }}
+    {{ form_row(commentForm.author, {'attr': {'placeholder': "Votre nom"}}) }}
+
+    {{ form_row(commentForm.content, {'attr': {'placeholder': "Votre commentaire"}}) }}
+    <button type="submit" class="btn btn-success">Publier</button>
+    {{ form_end(commentForm) }}
+    {% else %}
+        <h3>Connectez-vous pour commenter</h3>
+        <a href="{{path('app_login')}}" class="btn btn-primary">Se connecter pour commenter</a>
+    {% endif %}
+        </div>
+    </section>
 {% endblock %}
