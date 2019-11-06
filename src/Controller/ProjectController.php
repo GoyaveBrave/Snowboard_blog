@@ -7,12 +7,13 @@ use App\Entity\Comment;
 use App\Form\TrickType;
 use App\Form\CommentType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\{TextareaType, FileType, SubmitType, TextType};
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Form\Extension\Core\Type\{TextareaType, FileType, SubmitType, TextType};
 
 
 class ProjectController extends AbstractController
@@ -47,7 +48,7 @@ class ProjectController extends AbstractController
     } 
     /**
      * @Route("/project/newTricks", name="new_tricks")
-     * @Route("/project/{id}/edit", name="tricks_edit")
+     * @Route("/project/edit/{id}", name="tricks_edit")
      */
     public function form(Tricks $trick = null, Request $request, ObjectManager $manager) {
         if(!$trick) {

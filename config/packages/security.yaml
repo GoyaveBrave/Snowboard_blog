@@ -9,6 +9,10 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+    # Write here the differents roles 
+    role_hierarchy:
+        ROLE_ALLOWED: [ROLE_ADMIN, IS_AUTHENTICATED_ANONYMOUSLY]
+        ROLE_TO_VALID: [ROLE_TO_VALID]
     firewalls:
     # Authentification (login process) and Authorization (after login process, determines your access)
     # Dev section, only for dev's toolbar
@@ -38,5 +42,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        # - { path: ^/, roles: ROLE_ADMIN }
         # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+         - { path: ^/admin, allow_if: "user.getConfirm() == 1" }
+         - { path: ^/project/newTricks, allow_if: "user.getConfirm() == 1" }
+         - { path: ^/project/edit, allow_if: "user.getConfirm() == 1" }

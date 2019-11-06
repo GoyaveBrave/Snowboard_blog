@@ -43,6 +43,11 @@ class Tricks
      */
     private $comments;
 
+    /**
+     * @ORM\Column(type="string", length=700, nullable=true)
+     */
+    private $videoIllustration;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -129,6 +134,18 @@ class Tricks
                 $comment->setTrick(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getVideoIllustration(): ?string
+    {
+        return $this->videoIllustration;
+    }
+
+    public function setVideoIllustration(?string $videoIllustration): self
+    {
+        $this->videoIllustration = $videoIllustration;
 
         return $this;
     }

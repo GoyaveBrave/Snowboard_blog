@@ -255,3 +255,14 @@ html {height:100%}
 #red {
     background-color: #DC6180;
 }
+
+#black {
+    background-color: #000000;
+}
+
+/* DIV customize */
+
+#div_show {
+    height: 300px;
+    background-color: #e3b04b;
+}
