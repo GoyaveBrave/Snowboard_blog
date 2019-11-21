@@ -2,12 +2,16 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TricksRepository")
+ * @UniqueEntity(
+ *      fields={"name"},
+ *      message="Trick déjà crée!" )
  */
 class Tricks
 {
@@ -48,9 +52,20 @@ class Tricks
      */
     private $videoIllustration;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $slug;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PictureIllustration", mappedBy="tricks", cascade={"persist"})
+     */
+    private $pictureIllustration;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->pictureIllustration = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -67,6 +82,7 @@ class Tricks
     public function setName(string $name): self
     {
         $this->name = $name;
+        $this->setSlug($this->name);
 
         return $this;
     }
@@ -149,4 +165,88 @@ class Tricks
 
         return $this;
     }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(?string $slug): self
+    {
+        $this->slug = $this->slugify($slug);
+
+        return $this;
+    }
+
+    public function slugify($text)
+    {
+        $text = str_replace(" ","-",$text);
+        // replace non letter or digits by -
+    $text = preg_replace('#[^\\pL\d]+#u', '-', $text);
+
+    // trim
+    $text = trim($text, '-');
+
+    // transliterate
+    if (function_exists('iconv'))
+    {
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+    }
+
+    // lowercase
+    $text = strtolower($text);
+
+    // remove unwanted characters
+    $text = preg_replace('#[^-\w]+#', '', $text);
+
+    if (empty($text))
+    {
+        return 'n-a';
+    }
+
+    return urldecode($text);
+    }
+
+    /**
+     * @return Collection|PictureIllustration[]
+     */
+    public function getPictureIllustration(): Collection
+    {
+        return $this->pictureIllustration;
+    }
+
+    public function addPictureIllustration(PictureIllustration $pictureIllustration): self
+    {
+        if (!$this->pictureIllustration->contains($pictureIllustration)) {
+            $this->pictureIllustration[] = $pictureIllustration;
+            $pictureIllustration->setTricks($this);
+        }
+
+        return $this;
+    }
+
+    public function removePictureIllustration(PictureIllustration $pictureIllustration): self
+    {
+        if ($this->pictureIllustration->contains($pictureIllustration)) {
+            $this->pictureIllustration->removeElement($pictureIllustration);
+            // set the owning side to null (unless already changed)
+            if ($pictureIllustration->getTricks() === $this) {
+                $pictureIllustration->setTricks(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addTricks(Tricks $tricks)
+    {
+        $this->tricks->add($tricks);
+    }
+
+    public function removeTricks(Tricks $tricks)
+    {
+        $this->tricks->removeElement($tricks);
+    }
+
+    
 }

@@ -1,0 +1,24 @@
+{% extends "base.html.twig" %}
+{% form_theme formPictures 'bootstrap_4_layout.html.twig' %}
+{% block body %}
+
+<h1>YESS LA C'EST LA GALLERIE</h1>
+<div class="row min-vh-100 justify-content-around" id="tricks"> 
+{% for picture in pictures %}
+<article class=" row col-md-4 h-50 m-3">
+                    <img class="card-img-top" src="{{ asset('uploads/img/' ~ picture.picture) }}" alt="Thumbnail [100%x225]">
+                    <div class="card-body">
+                    <small class="text-muted">{{ picture.picture }}</small>
+                  </div>
+                  </article>
+{% endfor %}
+</div>
+
+{{ form_start (formPictures)}}
+
+{{ form_row(formPictures.picture) }}
+
+<button type="submit">Ajouter à la Gallerie</button>
+
+{{ form_end (formPictures) }}
+{% endblock %}

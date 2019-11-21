@@ -4,12 +4,18 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationType;
-use App\Security\LoginFormAuthenticator;
+use App\Form\ForgotPasswordType;
+use App\Repository\UserRepository;
 
+use App\Security\LoginFormAuthenticator;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\Repository\RepositoryFactory;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -31,7 +37,7 @@ class SecurityController extends AbstractController
             $manager->persist($user);
             $user->setToken(rand());
             $user->setConfirm(false);
-            $user->setRoles($role);
+             $user->setRoles($role);                 
             $manager->flush();
 
             $message = (new \Swift_Message('Mail de Confirmation'))
@@ -66,15 +72,6 @@ class SecurityController extends AbstractController
         $manager->flush();
 
         return $this->redirectToRoute('app_account');
-        /*$urlToken = $request->attributes->get('token');
-        $userFetchToken = $this->getDoctrine()->getRepository(User::class);
-        $userToken = $userFetchToken->findBy(array(
-            'token' => '$urlToken')
-        );
-        dd($userToken);
-        if ($user === $urlToken):
-        echo 'OUEEEEEE';
-        endif; */
     }
     /**
      * @Route("/login", name="app_login")
@@ -89,6 +86,69 @@ class SecurityController extends AbstractController
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error
+        ]);
+    }
+    /**
+     * @Route("/forgotten", name="app_forgot_pass")
+     */
+    public function passwordForgotten(\Swift_Mailer $mailer, Request $request, UserRepository $repo)
+    {
+        $form = $this->createFormBuilder()
+            ->add('email', EmailType::class)
+            ->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $repo->findOneByEmail($form["email"]->getData());
+            $message = (new \Swift_Message('Mail de Confirmation'))
+            ->setFrom('send@example.com')
+            ->setTo($user->getEmail())
+            ->setBody(
+                'Voici le lien pour confirmer votre compte : </br>
+            http://localhost:8000/security/reset_password/' . $user->getToken() . '',
+                'text/html'
+            );
+            $mailer->send($message);
+            return $this->redirectToRoute('app_login');
+        }
+            else {
+                echo "error";
+            }
+        
+            return $this->render('security/forgotten_password.html.twig', [
+                'formEmail' => $form->createView()
+            ]);
+        }
+    
+    /**
+     * @Route("/reset/{token}", name="app_reset_pass")
+     */
+    public function resetPassword( \Swift_Mailer $mailer, User $user, Request $request, UserPasswordEncoderInterface $encoder, UserRepository $repo, ObjectManager $manager)
+    {
+        
+        $form = $this->createFormBuilder($user)
+            ->add('password', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'invalid_message' => 'Les mots de passe doivent corresspondre !',
+                'options' => ['attr' => ['class' => 'password-field']],
+                'required' => true,
+                'first_options'  => ['label' => 'Password'],
+                'second_options' => ['label' => 'Repeat Password'],
+            ])
+            ->getForm();
+        $form->handleRequest($request);
+        
+        if($form->isSubmitted() && $form->isValid()) {
+            //dd($user->getPassword());
+        $hash = $encoder->encodePassword($user, $user->getPassword());
+        $user->setPassword($hash);
+        $manager->persist($user);
+        $manager->flush();
+
+        return $this->redirectToRoute('app_login');    
+        }
+        return $this->render('security/reset_password.html.twig', [
+            'resetEmail' => $form->createView()
         ]);
     }
 

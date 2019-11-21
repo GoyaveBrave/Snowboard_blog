@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProjectController!
-{% endblock %}
+{% block title %} Hello ProjectController! {% endblock %}
 
 {% block body %}
+
     <style>
         .example-wrapper {
             margin: 1em auto;
@@ -17,18 +17,18 @@
         }
     </style>
 
-    <section class="Tricks">
+    <section class="container">
 
         {% for trick in tricks %}
-            <trick>
+            <div class="container mt-3">
                 <h2>{{ trick.name }}</h2>
                 {#<div class="metadata">Ecrit le {{ article.createdAt | date ('d/m/Y') }} à {{ article.createdAt | date ('H:i') }} </div>#}
                 <div class="content">
-                    <img src="{{ trick.illustrationFilename }} ">
-                    <p>{{ trick.description }}</p>
-                    <a href="{{ path('trick_show', {'id': trick.id})}}" class="btn btn-primary">Lire la suite</a>
+                    <img class="w-50 mx-auto" src="{{ asset('uploads/img/' ~ trick.illustrationFilename) }} ">
+                    <p>{{ trick.description | truncate(50)}}</p>
+                    <a href="{{ path('trick_show', {'id': trick.id, 'slug': trick.name})}}" class="btn btn-primary">Lire la suite</a>
                 </div>
-            </trick>
+            </div>
         {% endfor %}
 
     </section>

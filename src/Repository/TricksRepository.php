@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Tricks;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Tricks|null find($id, $lockMode = null, $lockVersion = null)
@@ -20,8 +21,13 @@ class TricksRepository extends ServiceEntityRepository
     }
 
     // /**
-    //  * @return Tricks[] Returns an array of Tricks objects
+    //  * @param string|null $term
     //  */
+    public function getWithSearchQueryBuilder(?string $term): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('c');
+        return $qb;
+    }
     /*
     public function findByExampleField($value)
     {

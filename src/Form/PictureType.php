@@ -3,31 +3,22 @@
 namespace App\Form;
 
 use App\Entity\Tricks;
-use App\Entity\Category;
 use App\Entity\PictureIllustration;
-use App\Form\PictureType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-class TrickType extends AbstractType
+class PictureType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
-    { 
+    {
         $builder
-            ->add('name')
-            ->add('category', EntityType::class, [
-                'class' => Category::class,
-                'choice_label' => 'title'
-            ])
-            ->add('description')
-            ->add('illustrationFilename', FileType::class, [
+            ->add('pictureIllustration', FileType::class, [
                 'label' => 'IMG',
                 'mapped' => false,
                 'required' => false,
@@ -38,21 +29,14 @@ class TrickType extends AbstractType
                     ])
                 ],
             ])
-            ->add('pictureIllustration', CollectionType::class, [
-                'entry_type' => PictureType::class,
-                'entry_options' => ['label' => false],
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,           
-            ]) 
-            ->add('videoIllustration', TextareaType::class)
-        ;
+            // ...
+        ; 
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Tricks::class,
+            'data_class' => PictureIllustration::class,
         ]);
     }
 }

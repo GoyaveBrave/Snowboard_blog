@@ -1,54 +1,88 @@
 {% extends 'base.html.twig' %}
+{% form_theme commentForm 'bootstrap_4_layout.html.twig' %}
 
 {% block body %}
-    <trick>
         
-        <div class="col-xl w-75" id="div_show">
-        <h2 class="text-white text-right">{{ trick.name }}</h2>
+        <div class="container-fluid d-flex bg-white">
+        <img class="img-fluid mx-auto w-75" src="{{ asset('uploads/img/' ~ trick.illustrationFilename) }}"></img>
+        <div class="float-right">{% if app.user %}
+                    <div class="btn-group">
+                      <a href="{{ path('tricks_edit', {'slug': trick.slug, 'id': trick.id})}}" type="button" class="btn btn-sm btn-outline-secondary"><i class="fas fa-pen"></i></a>
+                      <a href="{{ path('delete', {'slug': trick.slug, 'id': trick.id})}}" type="button" class="btn btn-sm btn-outline-secondary" onclick="return confirm('Etes-vous sur de vouloir supprimer cette figure ?')"><i class="fas fa-trash"></i></a>
+                    </div>
+         {% endif %}</div><br>
         </div>
-        <div class="d-flex flex-row justify-content-end" id="black">
-            <div class="d-flex flex-column justify-content-end w-50 text-white">
-               <div class=" w-25">
-                  <p class="text-left text-secondary"> Catégorie </p>
-                  <p class="text-left">{{ trick.category.title }}</p>
-               </div>
-               <div class="">
-               <p>{{ trick.description }}</p>
-               </div>
-               
+        <div class="shadow-sm p-3 bg-white rounded">
+        <h2 class="text-dark text-center">{{ trick.name }}</h2>
+        </div>
+        <div class="album py-5 bg-light">
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card mb-4 shadow-sm">
+            <img src="" alt="">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card mb-4 shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card mb-4 shadow-sm">
+            <iframe class="bd-placeholder-img card-img-top" src="{{ trick.videoIllustration }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
-            {#  #}
         </div>
+        </div>
+
+
+
+  
+
+<div class="container d-flex bg-white">
+<p class="mx-auto">{{ trick.description }} <br> Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi molestiae, corrupti commodi velit, libero, est dolorem omnis inventore dolores harum ipsam neque quia rem cupiditate itaque repellat minus necessitatibus amet.Voluptatem delectus, beatae in architecto ipsam libero quod quam aspernatur ipsum ad exercitationem optio culpa? Ex laborum enim itaque modi quisquam est unde officia. Excepturi repudiandae obcaecati voluptate alias doloribus?</p>
+</div>
+<div class="container bg-white mb-5"><p>Catégorie : {{ trick.category.title }}</p>
+</div>
+{#
         <div id="black">
-               <img class="mx-auto" src="{{ asset('uploads/img/' ~ trick.illustrationFilename) }}">
-        </div>
-        
-    </trick>
-
-    <section id="commentaires">
-    <h1>{{ trick.comments | length }} Commentaires :</h1>
-    {% for comment in trick.comments %}
-        <div class="comment">
-            <div class="row">
-            <div class="col-3">
-               {{comment.author}} (<small>{{comment.createdAt | date('d/m/y à H:i')}}</small>)
-            </div>
-            <div class="col">
-              {{comment.content | raw}}
-            </div>
-            </div>
-    {% endfor %}
+            <img class="mx-auto" src="{{ asset('uploads/img/' ~ trick.illustrationFilename) }}">
+            <iframe width="560" height="315" src="{{ trick.videoIllustration }}" frameborder="0" 
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div> 
+#}
+    <div class="container mx-auto">
+    <h3 class="">{{ trick.comments | length }}
+            Commentaires :</h3>
+    </div>
+    
     {% if app.user %}
-    {{ form_start(commentForm) }}
-    {{ form_row(commentForm.author, {'attr': {'placeholder': "Votre nom"}}) }}
+            <div class="media w-50 mx-auto bg-white rounded pt-3 mt-3 pb-3">
+            {{ form_start(commentForm, { 'attr': {'class': 'mx-auto'} }) }}
+                {{ form_row(commentForm.author, {'attr': {'placeholder': "Votre nom"}}) }}
 
-    {{ form_row(commentForm.content, {'attr': {'placeholder': "Votre commentaire"}}) }}
-    <button type="submit" class="btn btn-success">Publier</button>
-    {{ form_end(commentForm) }}
-    {% else %}
-        <h3>Connectez-vous pour commenter</h3>
-        <a href="{{path('app_login')}}" class="btn btn-primary">Se connecter pour commenter</a>
-    {% endif %}
+                {{ form_row(commentForm.content, {'attr': {'placeholder': "Votre commentaire"}}) }}
+                <button type="submit" class="btn btn-success">Publier</button>
+                {{ form_end(commentForm) }}
+            {% else %}
+                <h3>Connectez-vous pour commenter</h3>
+                <a href="{{path('app_login')}}" class="btn btn-primary">Se connecter pour commenter</a>
         </div>
-    </section>
+                
+            {% endif %}
+</div>
+<div class="mx-auto container-fluid bg-white">
+    {% for comment in trick.comments %}
+        <div class="media w-50 mx-auto bg-white rounded pt-3 mt-3">
+            <img src="https://robohash.org/{{comment.author}}?size=100x100" class="align-self-start rounded-circle bg-dark my-3 mx-3 " alt="...">
+            <div class="media-body">
+                <h5 class="mt-0">{{comment.author}}</h5>
+                <p>{{comment.content | raw}}</p>
+                <p>(<small>{{comment.createdAt | date('d/m/y à H:i')}}</small>)</p>
+            </div>
+        </div>
+    {% endfor %}
+            </div>
+        
 {% endblock %}
