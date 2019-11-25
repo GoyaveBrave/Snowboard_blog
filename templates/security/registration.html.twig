@@ -1,8 +1,11 @@
 {% extends "base.html.twig" %}
 
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
 {% block body %}
 
 <h1>Inscription sur le site</h1>
+<div class="w-25 mx-auto">
 {{ form_start(form) }}
 
 
@@ -15,4 +18,5 @@
 
 <button type="submit" class="btn btn-success">Insctiption !</button>
 {{form_end(form)}}
+</div>
 {% endblock %}

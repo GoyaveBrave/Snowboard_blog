@@ -18,7 +18,8 @@ class PictureType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('pictureIllustration', FileType::class, [
+            ->add('picture')
+            /*, FileType::class, [
                 'label' => 'IMG',
                 'mapped' => false,
                 'required' => false,
@@ -29,7 +30,7 @@ class PictureType extends AbstractType
                     ])
                 ],
             ])
-            // ...
+            // ... */
         ; 
     }
 

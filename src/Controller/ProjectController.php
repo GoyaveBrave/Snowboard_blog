@@ -10,16 +10,19 @@ use App\Form\CommentType;
 use App\Form\PictureType;
 use Doctrine\ORM\EntityManager;
 use App\Entity\PictureIllustration;
+use App\Repository\PictureIllustrationRepository;
 use App\Repository\TricksRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Extension\Core\Type\{TextareaType, FileType, SubmitType, TextType};
 
 class ProjectController extends AbstractController
@@ -68,29 +71,35 @@ class ProjectController extends AbstractController
      */
     public function form (Tricks $trick = null, PictureIllustration $picture = null, Request $request, ObjectManager $manager) {
         
+        if (!$trick) {
             $trick = new Tricks();
+        }
+        if (!$picture) {
             $picture = new PictureIllustration();
+        }
+
+            $pictureCollection = new ArrayCollection();
+
+            foreach ($trick->getPictureIllustration() as $picture) {
+                $pictureCollection->add($picture);
+            }
+
+            $form = $this->createForm(TrickType::class, $trick);
+            $form->handleRequest($request);
+
         
-
-        $form = $this->createForm(TrickType::class, $trick);
-        $form->handleRequest($request);
-
             if($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $brochureFile */
-            dd($form->getData());
-            $brochureFile = $form['illustrationFilename']->getData();
-
-            // this condition is needed because the 'brochure' field is not required
-            // so the PDF file must be processed only when a file is uploaded
-            if ($brochureFile) {
-                $originalFilename = pathinfo($brochureFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $firstFile = $form['illustrationFilename']->getData();
+            $secondeFile = $form['pictureIllustration']->getData();
+            
+            //PREMIER IMG
+            if ($firstFile) {
+                $originalFilename = pathinfo($firstFile->getClientOriginalName(), PATHINFO_FILENAME);
                 // this is needed to safely include the file name as part of the URL
                 $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$brochureFile->guessExtension();
-
-                // Move the file to the directory where brochures are stored
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$firstFile->guessExtension();
                 try {
-                    $brochureFile->move(
+                    $firstFile->move(
                         $this->getParameter('brochures_directory'),
                         $newFilename
                     );
@@ -98,18 +107,22 @@ class ProjectController extends AbstractController
                     // ... handle exception if something happens during file upload
                 }
 
-                // updates the 'brochureFilename' property to store the PDF file name
-                // instead of its contents
                 $trick->setIllustrationFilename($newFilename);
             }
-            $manager->persist($trick, $picture);
-            $manager->flush();
 
+            foreach ($secondeFile as $mediaImage) {
+                $picture->setTricks($trick);
+                $manager->persist($mediaImage);
+            }
+            
+            $manager->persist($trick);
+            $manager->flush();
+    
             $this->addFlash(
                 'notice',
                 'Your changes were saved!');
 
-            return $this->redirectToRoute('trick_show', ['id' => $trick->getId()]);
+            return $this->redirectToRoute('trick_show', ['id' => $trick->getId(), 'slug' => $trick->getSlug()]);
         }
 
         return $this->render('project/newTricks.html.twig', [
@@ -121,7 +134,7 @@ class ProjectController extends AbstractController
     /**
      * @route("/project/{id}/{slug}", name="trick_show")
      */
-    public function show(Tricks $trick, Request $request, ObjectManager $manager)
+    public function show(Tricks $trick, Request $request, ObjectManager $manager, PictureIllustrationRepository $repo)
     {
         
         $comment = new Comment();
@@ -138,8 +151,12 @@ class ProjectController extends AbstractController
             
             return $this->redirectToRoute('trick_show', ['id' => $trick->getId(), 'slug' => $trick->getSlug()]);
         }
+
+        $pictureIllustration = $repo->findBy(array('tricks' => $trick->getId()));
+
         return $this->render('project/show.html.twig', [
             'trick' => $trick,
+            'pictureIllustrations' => $pictureIllustration,
             'commentForm' => $form->createView()
             ]);
     }
@@ -206,7 +223,7 @@ class ProjectController extends AbstractController
 
 
     /**
-     * @Route("project/delete/{id}", name="delete")
+     * @Route("project/delete/{id}/{slug}", name="delete")
      */
     public function delete(Tricks $trick, $id) {
         $entityManager = $this->getDoctrine()->getManager();
@@ -215,6 +232,16 @@ class ProjectController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('home');
+    }
+
+    /**
+     * @return string
+     */
+    private function generateUniqueFileName()
+    {
+        // md5() reduces the similarity of the file names generated by
+        // uniqid(), which is based on timestamps
+        return md5(uniqid());
     }
     
 }

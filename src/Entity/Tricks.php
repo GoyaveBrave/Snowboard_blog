@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -54,8 +55,9 @@ class Tricks
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Slug(fields={"name"})
      */
-    protected $slug;
+    private $slug;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\PictureIllustration", mappedBy="tricks", cascade={"persist"})
@@ -173,7 +175,7 @@ class Tricks
 
     public function setSlug(?string $slug): self
     {
-        $this->slug = $this->slugify($slug);
+        $this->slug = $slug;
 
         return $this;
     }

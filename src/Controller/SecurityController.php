@@ -105,15 +105,13 @@ class SecurityController extends AbstractController
             ->setTo($user->getEmail())
             ->setBody(
                 'Voici le lien pour confirmer votre compte : </br>
-            http://localhost:8000/security/reset_password/' . $user->getToken() . '',
+            http://localhost:8000/reset/' . $user->getToken() . '',
                 'text/html'
             );
             $mailer->send($message);
             return $this->redirectToRoute('app_login');
         }
-            else {
-                echo "error";
-            }
+           
         
             return $this->render('security/forgotten_password.html.twig', [
                 'formEmail' => $form->createView()
@@ -139,7 +137,7 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
         
         if($form->isSubmitted() && $form->isValid()) {
-            //dd($user->getPassword());
+        //dd($user->getPassword());
         $hash = $encoder->encodePassword($user, $user->getPassword());
         $user->setPassword($hash);
         $manager->persist($user);
