@@ -18,3 +18,5 @@ https://github.com/GoyaveBrave/p5.git
 
 ## Contributing
 Le travail a été developpé par moi-même sous la correction de mes mentors qui m'ont permis de mener ce projet à bien.
+
+<a href="https://codeclimate.com/github/GoyaveBrave/Snowboard_blog/maintainability"><img src="https://api.codeclimate.com/v1/badges/d0e985dcf1e59a513612/maintainability" /></a>
