@@ -10,7 +10,7 @@ afin d'avoir tous les différents champs de la base de donnée et que le site so
 Pour finir, vous ouvrirez tout ça depuis votre serveur local, et c'est parti mon kiki !
 
 ```bash
-https://github.com/GoyaveBrave/p5.git
+https://github.com/GoyaveBrave/Snowboard_blog.git
 ```
 
 ## Contributing
