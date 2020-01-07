@@ -70,13 +70,8 @@ class ProjectController extends AbstractController
      * @Route("/project/edit/{id}", name="tricks_edit")
      */
     public function form (Tricks $trick = null, PictureIllustration $picture = null, Request $request, ObjectManager $manager) {
-        
-        if (!$trick) {
-            $trick = new Tricks();
-        }
-        if (!$picture) {
-            $picture = new PictureIllustration();
-        }
+
+
 
             $pictureCollection = new ArrayCollection();
 
@@ -136,7 +131,6 @@ class ProjectController extends AbstractController
      */
     public function show(Tricks $trick, Request $request, ObjectManager $manager, PictureIllustrationRepository $repo)
     {
-        
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
 

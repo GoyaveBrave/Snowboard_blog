@@ -64,8 +64,13 @@ class Tricks
      */
     private $pictureIllustration;
 
-    public function __construct()
+    public function __construct($name, $description, $illustrationFilename, $category, $videoIllustration)
     {
+        $this->name = $name;
+        $this->description = $description;
+        $this->illustrationFilename = $illustrationFilename;
+        $this->category = $category;
+        $this->videoIllustration = $videoIllustration;
         $this->comments = new ArrayCollection();
         $this->pictureIllustration = new ArrayCollection();
     }

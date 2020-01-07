@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\DTO\CreateTrickDTO;
 use App\Entity\Tricks;
 use App\Entity\Category;
 use App\Entity\PictureIllustration;
@@ -9,6 +10,7 @@ use App\Form\PictureType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -27,7 +29,7 @@ class TrickType extends AbstractType
                 'choice_label' => 'title'
             ])
             ->add('description')
-            ->add('illustrationFilename', FileType::class, [
+            ->add('illustrationFileName', FileType::class, [
                 'label' => 'IMG',
                 'mapped' => false,
                 'required' => false,
@@ -52,7 +54,11 @@ class TrickType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Tricks::class,
+            'data_class' => CreateTrickDTO::class,
+            'empty_data' => function (FormInterface $form) {
+            return new CreateTrickDTO($form->get('name')->getData(), $form->get('description')->getData(),
+                $form->get('illustrationFileName')->getData());
+            }
         ]);
     }
 }

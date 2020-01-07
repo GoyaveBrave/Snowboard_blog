@@ -36,6 +36,17 @@ class Article
      */
     private $createdAt;
 
+    /**
+     * Article constructor.
+     * @param $title
+     * @param $content
+     */
+    public function __construct($title, $content)
+    {
+        $this->title = $title;
+        $this->content = $content;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

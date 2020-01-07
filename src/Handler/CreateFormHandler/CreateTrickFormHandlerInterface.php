@@ -4,7 +4,7 @@
 namespace App\Handler\CreateFormHandler;
 
 
-interface CreateTrickFormHandler
+interface CreateTrickFormHandlerInterface
 {
 
 }
