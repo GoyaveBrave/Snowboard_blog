@@ -1,9 +1,6 @@
-# Blog p_5
+# Blog p_6
 
-Ce projet est un blog codé entièrement en Php sans framework, donc "From Scratch". Celui-ci contient des articles, des éléments
-informatifs me concernant ainsi qu'une partie Administration permettant la gestion de ce dernier.
-L'architecture du code est en MVC, suivant les principes de la POO, des PSR-1 PSR-2, et présentant une protection contre la plupart des failles
-de sécurité (XSS, injection SQL etc).
+Ce projet est un blog codé en PHP sous le framework Symfony.
 
 ## Installation
 
@@ -13,7 +10,7 @@ afin d'avoir tous les différents champs de la base de donnée et que le site so
 Pour finir, vous ouvrirez tout ça depuis votre serveur local, et c'est parti mon kiki !
 
 ```bash
-https://github.com/GoyaveBrave/p5.git
+https://github.com/GoyaveBrave/Snowboard_blog.git
 ```
 
 ## Contributing
