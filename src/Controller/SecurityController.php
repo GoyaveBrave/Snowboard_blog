@@ -45,7 +45,7 @@ class SecurityController extends AbstractController
             ->setTo($user->getEmail())
             ->setBody(
                 'Voici le lien pour confirmer votre compte : </br>
-            http://localhost:8000/security/confirm/' . $user->getToken() . '',
+            http://localhost:8000/confirmation/' . $user->getToken() . '',
                 'text/html'
             );
             $mailer->send($message);
@@ -63,7 +63,6 @@ class SecurityController extends AbstractController
      */
     public function confirm(User $user, ObjectManager $manager)
     {
-        //dd($user);
         $role = array('ROLE_ADMIN');
         $user->setConfirm(true);
         $user->setToken(rand());

@@ -20,7 +20,7 @@ class AccountController extends AbstractController
     {
         
         $user = $this->getUser();
-        dd($user);
+        //dd($user);
         return $this->render('account/index.html.twig', [
             'controller_name' => 'AccountController',
             'user' => $user
